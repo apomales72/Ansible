@@ -1,1 +1,20 @@
- # Inventory files for staging, production, etc.
+# Simplified Ansible inventory file with hosts and groups
+
+web_servers:
+  hosts:
+    web01.example.com:
+    web02.example.com:
+
+db_servers:
+  hosts:
+    db01.example.com:
+    db02.example.com:
+
+all:
+  children:
+    web_servers:
+    db_servers:
+
+dev_env:
+  hosts:
+    dev01.example.com:
