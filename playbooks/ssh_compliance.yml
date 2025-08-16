@@ -1,0 +1,68 @@
+---
+- name: Enforce SSH security settings
+  hosts: all
+  become: yes
+  vars:
+    sshd_config: /etc/ssh/sshd_config
+
+  tasks:
+    - name: Ensure root login is disabled
+      lineinfile:
+        path: "{{ sshd_config }}"
+        regexp: '^PermitRootLogin'
+        line: 'PermitRootLogin no'
+        state: present
+        backrefs: yes
+
+    - name: Ensure password authentication is disabled
+      lineinfile:
+        path: "{{ sshd_config }}"
+        regexp: '^PasswordAuthentication'
+        line: 'PasswordAuthentication no'
+        state: present
+        backrefs: yes
+
+    - name: Set SSH protocol to 2 only
+      lineinfile:
+        path: "{{ sshd_config }}"
+        regexp: '^Protocol'
+        line: 'Protocol 2'
+        state: present
+        backrefs: yes
+
+    - name: Limit SSH idle timeout interval
+      lineinfile:
+        path: "{{ sshd_config }}"
+        regexp: '^ClientAliveInterval'
+        line: 'ClientAliveInterval 300'
+        state: present
+        backrefs: yes
+
+    - name: Set maximum number of client alive messages
+      lineinfile:
+        path: "{{ sshd_config }}"
+        regexp: '^ClientAliveCountMax'
+        line: 'ClientAliveCountMax 2'
+        state: present
+        backrefs: yes
+
+    - name: Ensure changes take effect (restart SSH)
+      service:
+        name: sshd
+        state: restarted
+
+# What this playbook enforces:
+
+# No root SSH login (PermitRootLogin no)
+
+# No password-based login (forces SSH key use)
+
+# Protocol 2 only (Protocol 1 is insecure)
+
+# Idle timeout (disconnects inactive sessions after 5 minutes)
+
+# Limited alive messages (prevents lingering sessions)
+
+# Restart sshd to apply changes
+
+# Test this playbook safely on a non-production VM (so you don’t accidentally lock yourself out).
