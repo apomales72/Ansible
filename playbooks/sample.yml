@@ -4,12 +4,12 @@
   become: yes
   tasks:
     - name: Install Apache
-      yum:
+      ansible.builtin.package:
         name: httpd
         state: present
 
     - name: Start Apache service
-      service:
+      ansible.builtin.service:
         name: httpd
         state: started
         enabled: yes
